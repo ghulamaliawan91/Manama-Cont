@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manama Delivery App</title>
+    <!-- Icons Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e63946; /* Bahrain Red */
+            --bg: #f8f9fa;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --white: #ffffff;
+            --nav-height: 70px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: calc(var(--nav-height) + 20px);
+        }
+
+        /* Header */
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 25px 20px;
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.2);
+            margin-bottom: 20px;
+        }
+        header h1 { font-size: 22px; margin-bottom: 5px; }
+        header p { font-size: 13px; opacity: 0.9; }
+
+        /* Tab Content Logic */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Main Content Styles */
+        .container { padding: 0 20px; }
+
+        /* Search Bar */
+        .search-box {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 14px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+        }
+        
+        /* Helper Text */
+        .search-hint {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none; 
+        }
+
+        /* Section Headers with Counter Badge */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin: 20px 0 10px 0;
+            padding-left: 5px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* The Counter Badge Style */
+        .count-badge {
+            background-color: var(--primary);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.3s ease; 
+        }
+        .info h3 { font-size: 15px; margin-bottom: 2px; }
+        .info p { font-size: 12px; color: var(--text-light); }
+        .tag { font-size: 10px; background: #eee; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block;}
+        
+        .call-btn {
+            width: 40px;
+            height: 40px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        
+        /* Style for items without phone numbers */
+        .no-call {
+            width: 40px;
+            height: 40px;
+            background: #eee;
+            color: #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Creator Tab Styles */
+        .profile-card {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 30px;
+        }
+        .profile-details h2 { font-size: 18px; margin-bottom: 5px; }
+        .profile-details p { font-size: 13px; color: #666; margin-bottom: 20px; }
+        
+        /* Contact Tab Styles */
+        .contact-action {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .contact-action:active { transform: scale(0.98); }
+        
+        .contact-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        .bg-call { background-color: #25d366; }
+        .bg-whatsapp { background-color: #128C7E; }
+        .bg-email { background-color: #ea4335; }
+        
+        .contact-text h4 { font-size: 16px; margin-bottom: 2px; color: var(--text); }
+        .contact-text p { font-size: 12px; color: var(--text-light); }
+
+        /* Sources Tab Styles */
+        .source-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 3px solid #f1faee;
+        }
+        .source-item h4 { font-size: 14px; margin-bottom: 5px; }
+        .source-item p { font-size: 12px; color: #666; }
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: white;
+            display: flex;
+            justify-content: space-around; 
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #999;
+            text-decoration: none;
+            font-size: 9px; 
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            margin-bottom: 4px;
+            transition: 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+        
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <h1>Manama Directory</h1>
+        <p>Bahrain Delivery Services</p>
+    </header>
+
+    <!-- TAB 1: MAIN DIRECTORY -->
+    <div id="tab-main" class="tab-content active">
+        
+        <div class="container">
+            <!-- Search -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search names...">
+            </div>
+            <p class="search-hint" id="searchHint">Type above to view all hidden options</p>
+
+            <!-- Hotels -->
+            <div class="section-title">
+                Hotels 
+                <span id="count-hotels" class="count-badge">0</span>
+            </div>
+            <div id="hotels-wrapper">
+                <div class="card">
+                    <div class="info">
+                        <h3>Bab Al Bahrain Hotel</h3>
+                        <p>Gov. Avenue, Manama</p>
+                        <span class="tag">City Center</span>
+                    </div>
+                    <a href="tel:+97317210000" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Downtown Rotana</h3>
+                        <p>Palace Road</p>
+                        <span class="tag">Business Bay</span>
+                    </div>
+                    <a href="tel:+97317180000" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>The Domain Hotel</h3>
+                        <p>Seef District</p>
+                        <span class="tag">Luxury</span>
+                    </div>
+                    <a href="tel:+97317170000" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <!-- NEW ITEM -->
+                <div class="card">
+                    <div class="info">
+                        <h3>Wyndham Grand Manama</h3>
+                        <p>Seef</p>
+                        <span class="tag">Hotel</span>
+                    </div>
+                    <a href="tel:+97317247524" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+
+            <!-- Cafes -->
+            <div class="section-title">
+                Cafes & Eateries 
+                <span id="count-cafes" class="count-badge">0</span>
+            </div>
+            <div id="cafes-wrapper">
+                <div class="card">
+                    <div class="info">
+                        <h3>Jones the Grocer</h3>
+                        <p>Adliya</p>
+                        <span class="tag">Cafe</span>
+                    </div>
+                    <a href="tel:+97317718000" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Coffee Bean</h3>
+                        <p>Diplomatic Area</p>
+                        <span class="tag">Coffee</span>
+                    </div>
+                    <a href="tel:+97317581222" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Starbucks</h3>
+                        <p>Seef</p>
+                        <span class="tag">Coffee</span>
+                    </div>
+                    <a href="tel:+97317220000" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <!-- NEW ITEMS -->
+                <div class="card">
+                    <div class="info">
+                        <h3>Da Rosa Restaurant</h3>
+                        <p>Fraser Suites</p>
+                        <span class="tag">Restaurant</span>
+                    </div>
+                    <a href="tel:+97316161843" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Parsian Restaurant</h3>
+                        <p>Manama</p>
+                        <span class="tag">Restaurant</span>
+                    </div>
+                    <a href="tel:+97317811511" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Jashan</h3>
+                        <p>Indian Cuisine</p>
+                        <span class="tag">Restaurant</span>
+                    </div>
+                    <div class="no-call">App</div> <!-- Using custom class for FoodChow -->
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Furn Bistro & Bakery</h3>
+                        <p>Bakery</p>
+                        <span class="tag">Bakery</span>
+                    </div>
+                    <div class="no-call">App</div> <!-- Using custom class for FoodChow -->
+                </div>
+            </div>
+
+            <!-- Markets -->
+            <div class="section-title">
+                Stores & Markets 
+                <span id="count-markets" class="count-badge">0</span>
+            </div>
+            <div id="markets-wrapper">
+                <div class="card">
+                    <div class="info">
+                        <h3>BMMI</h3>
+                        <p>Dilmunia</p>
+                        <span class="tag">Supermarket</span>
+                    </div>
+                    <a href="tel:+97317581333" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Lulu Hypermarket</h3>
+                        <p>Seef</p>
+                        <span class="tag">Hypermarket</span>
+                    </div>
+                    <a href="tel:+97317175555" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <!-- NEW ITEMS -->
+                <div class="card">
+                    <div class="info">
+                        <h3>Moonlight Delivery</h3>
+                        <p>Delivery Service</p>
+                        <span class="tag">Service</span>
+                    </div>
+                    <a href="tel:+97333362036" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Zeemart Family Shop</h3>
+                        <p>Supermarket</p>
+                        <span class="tag">Supermarket</span>
+                    </div>
+                    <a href="tel:+97335346818" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>National Cold Store</h3>
+                        <p>Market</p>
+                        <span class="tag">Cold Store</span>
+                    </div>
+                    <div class="no-call">N/A</div> <!-- No Number -->
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Al-Mira Stationary</h3>
+                        <p>Store</p>
+                        <span class="tag">Stationary</span>
+                    </div>
+                    <a href="tel:+97317214381" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+                <div class="card">
+                    <div class="info">
+                        <h3>Day & Night Market</h3>
+                        <p>Multiple Branches</p>
+                        <span class="tag">Supermarket</span>
+                    </div>
+                    <a href="tel:+97316010747" class="call-btn"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: CREATOR (About) -->
+    <div id="tab-creator" class="tab-content">
+        <div class="container">
+            <div class="profile-card">
+                <div class="avatar">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="profile-details">
+                    <h2> 3B3</h2>
+                    <p><strong>Role:</strong> G Awan Developer</p>
+                    <p>I created this application to make life easier for the residents of Manama, Bahrain. My goal is to connect people with local businesses quickly.</p>
+                    <p><strong>Location:</strong> Manama, Bahrain</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: SOURCES -->
+    <div id="tab-sources" class="tab-content">
+        <div class="container">
+            <div class="section-title">Data Sources</div>
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">The information provided in this app is collected and verified from the following trusted public directories:</p>
+            
+            <div class="source-item">
+                <h4><i class="fab fa-google"></i> Google Maps Business</h4>
+                <p>Verified business listings and contact numbers.</p>
+            </div>
+            
+            <div class="source-item">
+                <h4><i class="fas fa-globe"></i> Local Yellow Pages Bahrain</h4>
+                <p>Publicly available directory data.</p>
+            </div>
+
+            <div class="source-item">
+                <h4><i class="fas fa-building"></i> Official Hotel Websites</h4>
+                <p>Direct reservation and delivery lines.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: CONTACT (NEW) -->
+    <div id="tab-contact" class="tab-content">
+        <div class="container">
+            <div class="section-title">Get in Touch</div>
+            
+            <!-- Call Button -->
+            <a href="tel:+97312345678" class="contact-action">
+                <div class="contact-icon bg-call">
+                    <i class="fas fa-phone"></i>
+                </div>
+                <div class="contact-text">
+                    <h4>Call Us</h4>
+                    <p>+973 1234 5678</p>
+                </div>
+            </a>
+
+            <!-- WhatsApp Button -->
+            <a href="https://wa.me/97312345678" class="contact-action">
+                <div class="contact-icon bg-whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="contact-text">
+                    <h4>WhatsApp</h4>
+                    <p>Chat with us instantly</p>
+                </div>
+            </a>
+
+            <!-- Email Button -->
+            <a href="mailto:support@bahrainapp.com" class="contact-action">
+                <div class="contact-icon bg-email">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="contact-text">
+                    <h4>Email</h4>
+                    <p>support@bahrainapp.com</p>
+                </div>
+            </a>
+
+            <div style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
+                Available 0/0 for inquiries
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAVIGATION (4 TABS NOW) -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="openTab('main', this)">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="openTab('creator', this)">
+            <i class="fas fa-user-circle"></i>
+            <span>Creator</span>
+        </button>
+        <button class="nav-item" onclick="openTab('sources', this)">
+            <i class="fas fa-info-circle"></i>
+            <span>Sources</span>
+        </button>
+        <button class="nav-item" onclick="openTab('contact', this)">
+            <i class="fas fa-phone-alt"></i>
+            <span>Contact</span>
+        </button>
+    </nav>
+
+    <script>
+        // CONFIGURATION
+        const INITIAL_VISIBLE_LIMIT = 3; 
+
+        // 1. Initial Load Logic
+        window.onload = function() {
+            updateCounts();
+            limitItems(); 
+        };
+
+        function limitItems() {
+            const wrappers = ['hotels-wrapper', 'cafes-wrapper', 'markets-wrapper'];
+            
+            wrappers.forEach(id => {
+                const wrapper = document.getElementById(id);
+                const cards = wrapper.getElementsByClassName('card');
+
+                Array.from(cards).forEach((card, index) => {
+                    if (index < INITIAL_VISIBLE_LIMIT) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+            
+            document.getElementById('searchHint').style.display = 'none';
+        }
+
+        function updateCounts() {
+            const hotelCount = document.getElementById('hotels-wrapper').childElementCount;
+            document.getElementById('count-hotels').innerText = hotelCount;
+
+            const cafeCount = document.getElementById('cafes-wrapper').childElementCount;
+            document.getElementById('count-cafes').innerText = cafeCount;
+
+            const marketCount = document.getElementById('markets-wrapper').childElementCount;
+            document.getElementById('count-markets').innerText = marketCount;
+        }
+
+        // 2. Tab Switching Logic
+        function openTab(tabName, element) {
+            var contents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove("active");
+            }
+
+            var navItems = document.getElementsByClassName("nav-item");
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove("active");
+            }
+
+            document.getElementById("tab-" + tabName).classList.add("active");
+            element.classList.add("active");
+
+            const headerTitle = document.querySelector('header h1');
+            const headerSub = document.querySelector('header p');
+            
+            if(tabName === 'main') {
+                headerTitle.innerText = "Manama Directory";
+                headerSub.innerText = "Bahrain Delivery Services";
+                // Reset list
+                document.getElementById('searchInput').value = '';
+                limitItems(); 
+            } else if (tabName === 'creator') {
+                headerTitle.innerText = "About Me";
+                headerSub.innerText = "Developer Profile";
+            } else if (tabName === 'sources') {
+                headerTitle.innerText = "Information";
+                headerSub.innerText = "Where data comes from";
+            } else if (tabName === 'contact') {
+                headerTitle.innerText = "Contact Us";
+                headerSub.innerText = "Get in touch with us";
+            }
+        }
+
+        // 3. Search Logic
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const wrappers = ['hotels-wrapper', 'cafes-wrapper', 'markets-wrapper'];
+            const searchHint = document.getElementById('searchHint');
+
+            if (term === "") {
+                searchHint.style.display = 'none';
+                limitItems();
+                return;
+            }
+
+            searchHint.style.display = 'block';
+
+            wrappers.forEach(id => {
+                const wrapper = document.getElementById(id);
+                const cards = wrapper.getElementsByClassName('card');
+
+                Array.from(cards).forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    const subtitle = card.querySelector('p').textContent.toLowerCase();
+
+                    if(title.includes(term) || subtitle.includes(term)) {
+                        card.style.display = 'flex'; 
+                    } else {
+                        card.style.display = 'none'; 
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
